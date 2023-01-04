@@ -1,3 +1,5 @@
+# Modol odpowiedzialny za znajdowanie pozycji galek ocznych i umieszczanie ich na ekranie
+
 from time import sleep, time
 
 import cv2
