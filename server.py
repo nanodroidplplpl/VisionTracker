@@ -1,6 +1,7 @@
 # Modol servera, ktory streamoje film do polaczonego klienta
 # Odbierajac przy tym informacje o tym gdzie zwiekszyc rozdzielczosc
 import socket
+import threading
 from time import sleep
 
 import cv2
@@ -8,6 +9,8 @@ import pickle
 import struct
 import imutils
 import os
+
+import mpConfig
 
 HOST = '127.0.0.1'
 PORT = 5001
@@ -24,6 +27,7 @@ class Server():
     pause = 0
     prep_to_send = True
 
+    lock = threading.Lock()
     def __init__(self, host, port):
         self.clinet_server_socket = None
         self.HOST = host
@@ -95,15 +99,40 @@ class Server():
         print(data)
         return data
 
-    def mind_point_and_pause_update(self):
+    def mind_point_and_pause_update_thread1(self):
+        print("start1")
         while True:
             data = self.client_server_socket.recv(1024).decode()
             d = data.split()
-            self.pause = int(d[0])
-            self.mind_pointx = int(d[1])
-            self.mind_pointy = int(d[2])
-            print("Pauza: " + str(self.pause) + " mind_pointx: " +
-                  str(self.mind_pointx) + " mind_pointy: " + str(self.mind_pointy))
+            self.lock.acquire()
+            try:
+                self.pause = int(d[0])
+                self.mind_pointx = int(d[1])
+                self.mind_pointy = int(d[2])
+            finally:
+                self.lock.release()
+            #print("Pauza: " + str(self.pause) + " mind_pointx: " +
+            #      str(self.mind_pointx) + " mind_pointy: " + str(self.mind_pointy))
+
+    def streamng_vid_thread2(self):
+        print("start2")
+        while True:
+            self.server_socket.listen()
+            #client, addr = self.client_socket.accept()
+            if self.client_socket:
+                # vid = cv2.VideoCapture(0)
+                vid = cv2.VideoCapture("taniec_na_lodzie.mp4")
+                while (vid.isOpened()):
+                    # get_part_of_img(img, x, y, size_x, size_y)
+                    print("Pauza: " + str(self.pause) + " mind_pointx: " +
+                          str(self.mind_pointx) + " mind_pointy: " + str(self.mind_pointy))
+                    img, frame = vid.read()
+                    a = pickle.dumps(frame)
+                    message = struct.pack("Q", len(a)) + a
+                    self.client_socket.sendall(message)
+                    print("Wielkość wysyłanego pliku: " + str(len(a)))
+                    cv2.imshow('Sending...', frame)
+                    key = cv2.waitKey(10)
 
     def testServer(self):
         server_socket = self.create_socket(socket.gethostbyname(socket.gethostname()), PORT)
@@ -129,4 +158,14 @@ if __name__ == "__main__":
 
     server.send_titles()
     server.get_chosen_title()
-    server.mind_point_and_pause_update()
+    #server.mind_point_and_pause_update()
+    thread1 = threading.Thread(target=server.mind_point_and_pause_update_thread1())
+    thread2 = threading.Thread(target=server.streamng_vid_thread2())
+
+    thread1.start()
+    thread2.start()
+
+    thread1.join()
+    thread2.join()
+
+    #server.streamng_vid_thread2()

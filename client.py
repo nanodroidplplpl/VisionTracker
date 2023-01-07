@@ -2,6 +2,7 @@
 # jednoczesnie wysyla informacje o tym gdzie zwiekszyc rozdzielczosc
 import socket
 from time import sleep
+import threading
 
 import cv2
 import pickle
@@ -86,13 +87,38 @@ class Client():
                 #self.server_socket.close()
                 return
 
-    def send_mindpoint_and_pause(self):
+    def send_mindpoint_and_pause_thread1(self):
+        print("Start1")
         while True:
             a = str(input())
             b = str(input())
             c = str(input())
             d = a+' '+b+' '+c
             self.server_client_socket.sendall(d.encode())
+
+    def get_streamed_vid_thread2(self):
+        print("Start2")
+        data = b""
+        # client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        payload_size = struct.calcsize("Q")
+        while True:
+            while len(data) < payload_size:
+                packet = self.client_socket.recv(4096)
+                if not packet: break
+                data += packet
+            packed_msg_size = data[:payload_size]
+            data = data[payload_size:]
+            msg_size = struct.unpack("Q", packed_msg_size)[0]
+            while len(data) < msg_size:
+                data += self.client_socket.recv(4096)
+            frame_data = data[:msg_size]
+            data = data[msg_size:]
+            frame = pickle.loads(frame_data)
+            cv2.imshow("Receiving...", frame)
+            key = cv2.waitKey(10)
+            if key == 13:
+                break
+        self.client_socket.close()
 
     def testClient(self):
         client_socket = self.create_socket()
@@ -104,5 +130,16 @@ if __name__ == "__main__":
     data = client.get_titles()
     #data = ['taniec_na_lodzie.mp4', 'taniec_na_sniegu.mp4']
     client.send_chosen_title(0, data)
-    client.send_mindpoint_and_pause()
+    #client.send_mindpoint_and_pause()
+    #client.get_streamed_vid_thread2()
+
+    thread1 = threading.Thread(target=client.send_mindpoint_and_pause_thread1())
+    thread2 = threading.Thread(target=client.get_streamed_vid_thread2())
+
+    thread1.start()
+    thread2.start()
+
+
+    thread1.join()
+    thread2.join()
     #client.testClient()
