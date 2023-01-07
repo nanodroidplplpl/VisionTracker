@@ -18,6 +18,11 @@ class Server():
     server_socket = None
     client_server_socket = None
     PORT_CLIENT_SERVER = 5002
+    mind_pointx = 0
+    mind_pointy = 0
+    # 0 - nie ma pauzy, 1-jest pauza
+    pause = 0
+    prep_to_send = True
 
     def __init__(self, host, port):
         self.clinet_server_socket = None
@@ -28,7 +33,7 @@ class Server():
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         host_name = socket.gethostname()
         socket_address = ((HOST, PORT))
-        #self.server_socket = server_socket
+        # self.server_socket = server_socket
         server_socket.bind(socket_address)
         return server_socket
 
@@ -58,7 +63,7 @@ class Server():
         print(titles)
         return titles
 
-# Step one of comunication
+    # Step one of comunication
     def send_titles(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         host_name = socket.gethostname()
@@ -72,13 +77,13 @@ class Server():
                 print(titles)
                 self.client_socket.sendall(str(titles).encode())
                 # do wywalenia
-                #self.server_socket.close()
+                # self.server_socket.close()
                 return
 
     def get_chosen_title(self):
         sleep(0.5)
         self.client_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        #client_server_socket.settimeout(2)
+        # client_server_socket.settimeout(2)
         while True:
             try:
                 self.client_server_socket.connect((self.HOST, self.PORT_CLIENT_SERVER))
@@ -90,15 +95,38 @@ class Server():
         print(data)
         return data
 
+    def mind_point_and_pause_update(self):
+        while True:
+            data = self.client_server_socket.recv(1024).decode()
+            d = data.split()
+            self.pause = int(d[0])
+            self.mind_pointx = int(d[1])
+            self.mind_pointy = int(d[2])
+            print("Pauza: " + str(self.pause) + " mind_pointx: " +
+                  str(self.mind_pointx) + " mind_pointy: " + str(self.mind_pointy))
+
     def testServer(self):
         server_socket = self.create_socket(socket.gethostbyname(socket.gethostname()), PORT)
         self.accepting_connection(server_socket)
 
+    def reset_all(self):
+        try:
+            self.server_socket.close()
+        except socket.error:
+            pass
+        try:
+            self.client_socket.close()
+        except socket.error:
+            pass
+        try:
+            self.client_server_socket.close()
+        except socket.error:
+            pass
+
 
 if __name__ == "__main__":
     server = Server(HOST, PORT)
-    #server.testServer()
+
     server.send_titles()
-    #sleep(0.5)
     server.get_chosen_title()
-    # print(str(socket.gethostbyname(socket.gethostname())))
+    server.mind_point_and_pause_update()

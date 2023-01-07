@@ -79,15 +79,21 @@ class Client():
         self.client_server_socket.bind(client_server_address)
         while True:
             self.client_server_socket.listen()
-            server_client_socket, addr = self.client_server_socket.accept()
-            if server_client_socket:
-                server_client_socket.sendall(data[choice].encode())
+            self.server_client_socket, addr = self.client_server_socket.accept()
+            if self.server_client_socket:
+                self.server_client_socket.sendall(data[choice].encode())
                 # do wywalenia
                 #self.server_socket.close()
                 return
 
-    def wyslanie_mindpoint(self, mindpoint):
-        pass
+    def send_mindpoint_and_pause(self):
+        while True:
+            a = str(input())
+            b = str(input())
+            c = str(input())
+            d = a+' '+b+' '+c
+            self.server_client_socket.sendall(d.encode())
+
     def testClient(self):
         client_socket = self.create_socket()
         self.getting_server_connect(client_socket, HOST, PORT)
@@ -98,4 +104,5 @@ if __name__ == "__main__":
     data = client.get_titles()
     #data = ['taniec_na_lodzie.mp4', 'taniec_na_sniegu.mp4']
     client.send_chosen_title(0, data)
+    client.send_mindpoint_and_pause()
     #client.testClient()
