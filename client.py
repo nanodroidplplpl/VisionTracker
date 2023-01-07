@@ -95,6 +95,7 @@ class Client():
             c = str(input())
             d = a+' '+b+' '+c
             self.server_client_socket.sendall(d.encode())
+            print("Sending...")
 
     def get_streamed_vid_thread2(self):
         print("Start2")
@@ -133,13 +134,14 @@ if __name__ == "__main__":
     #client.send_mindpoint_and_pause()
     #client.get_streamed_vid_thread2()
 
-    thread1 = threading.Thread(target=client.send_mindpoint_and_pause_thread1())
-    thread2 = threading.Thread(target=client.get_streamed_vid_thread2())
+    thread1 = threading.Thread(target=client.send_mindpoint_and_pause_thread1)
+    #thread2 = threading.Thread(target=client.get_streamed_vid_thread2)
 
     thread1.start()
-    thread2.start()
+    #thread2.start()
 
+    client.get_streamed_vid_thread2()
 
     thread1.join()
-    thread2.join()
+    #thread2.join()
     #client.testClient()

@@ -130,7 +130,7 @@ class Server():
                     a = pickle.dumps(frame)
                     message = struct.pack("Q", len(a)) + a
                     self.client_socket.sendall(message)
-                    print("Wielkość wysyłanego pliku: " + str(len(a)))
+                    #print("Wielkość wysyłanego pliku: " + str(len(a)))
                     cv2.imshow('Sending...', frame)
                     key = cv2.waitKey(10)
 
@@ -152,20 +152,51 @@ class Server():
         except socket.error:
             pass
 
+def watek1():
+    max_iteracji = 10
+    # Kod wykonywany przez wątek 1
+    for i in range(max_iteracji):
+        print("Wątek 1, iteracja:", i)
+
+def watek2():
+    max_iteracji = 5
+    # Kod wykonywany przez wątek 2
+    for i in range(max_iteracji):
+        print("Wątek 2, iteracja:", i)
 
 if __name__ == "__main__":
+
     server = Server(HOST, PORT)
 
     server.send_titles()
     server.get_chosen_title()
     #server.mind_point_and_pause_update()
-    thread1 = threading.Thread(target=server.mind_point_and_pause_update_thread1())
-    thread2 = threading.Thread(target=server.streamng_vid_thread2())
+    thread1 = threading.Thread(target=server.mind_point_and_pause_update_thread1)
+    #thread2 = threading.Thread(target=server.streamng_vid_thread2)
+
+    thread1.start()
+    #thread2.start()
+    server.streamng_vid_thread2()
+
+
+    #thread2.join()
+    thread1.join()
+    #thread2.join()
+
+    #server.streamng_vid_thread2()
+    '''
+    server = Server(HOST, PORT)
+
+    server.send_titles()
+    server.get_chosen_title()
+    # server.mind_point_and_pause_update()
+
+    thread1 = threading.Thread(target=server.mind_point_and_pause_update_thread1)
+    thread2 = threading.Thread(target=watek2)
 
     thread1.start()
     thread2.start()
 
-    thread1.join()
-    thread2.join()
-
-    #server.streamng_vid_thread2()
+    # Nie czekamy na zakończenie wątków
+    print("Wszystkie wątki zostały uruchomione")
+    '''
