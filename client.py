@@ -3,6 +3,8 @@
 import socket
 from time import sleep
 import threading
+import eyeTrack
+import guiEye
 
 import cv2
 import pickle
@@ -19,6 +21,10 @@ class Client():
     server_socket = None
     client_server_socket = None #adres kliena jako serweru
     server_client_socket = None # adres serweru jako klienta
+    mind_pointx = 0
+    mind_pointy = 0
+
+    lock = threading.Lock()
 
     def __init__(self, host, port, port_client):
         self.HOST = host
@@ -87,49 +93,107 @@ class Client():
                 #self.server_socket.close()
                 return
 
-    def send_mindpoint_and_pause_thread1(self):
+    def send_mindpoint_and_pause_thread1(self, webcam, gaze, sample_surface, al, bl, sl, fl, el, ap, bp, sp, fp, ep):
         print("Start1")
         while True:
-            a = str(input())
-            b = str(input())
-            c = str(input())
-            d = a+' '+b+' '+c
+            #a = str(input())
+            #b = str(input())
+            #c = str(input())
+            a = 0
+            b, c = eyeTrack.get_eye_mindpoint(webcam, gaze, sample_surface, al, bl, sl, fl, el, ap, bp, sp, fp, ep)
+            #self.lock.acquire()
+            #try:
+            #    self.mind_pointx = b
+            #    self.mind_pointy = c
+            #finally:
+            #    self.lock.release()
+            d = str(a)+' '+str(b)+' '+str(c)
             self.server_client_socket.sendall(d.encode())
-            print("Sending...")
+            #print("Sending...")
 
-    def get_streamed_vid_thread2(self):
+    '''Oryginal
+    def get_streamed_vid_thread2(self, sample_surface):
         print("Start2")
         data = b""
+        buf = None
         # client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         payload_size = struct.calcsize("Q")
+        big_payload_size = struct.calcsize("QQ")
         while True:
             while len(data) < payload_size:
-                packet = self.client_socket.recv(4096)
+                packet = self.client_socket.recv(1096)
                 if not packet: break
                 data += packet
             packed_msg_size = data[:payload_size]
             data = data[payload_size:]
             msg_size = struct.unpack("Q", packed_msg_size)[0]
             while len(data) < msg_size:
-                data += self.client_socket.recv(4096)
+                data += self.client_socket.recv(1096)
             frame_data = data[:msg_size]
             data = data[msg_size:]
-            frame = pickle.loads(frame_data)
-            cv2.imshow("Receiving...", frame)
+            frame_max = pickle.loads(frame_data)
+            #cv2.imshow("Receiving...", frame_max)
             key = cv2.waitKey(10)
             while len(data) < payload_size:
-                packet = self.client_socket.recv(4096)
+                packet = self.client_socket.recv(1096)
                 if not packet: break
                 data += packet
             packed_msg_size = data[:payload_size]
             data = data[payload_size:]
             msg_size = struct.unpack("Q", packed_msg_size)[0]
             while len(data) < msg_size:
-                data += self.client_socket.recv(4096)
+                data += self.client_socket.recv(1096)
             frame_data = data[:msg_size]
             data = data[msg_size:]
-            frame = pickle.loads(frame_data)
-            cv2.imshow("Rec", frame)
+            frame_min = pickle.loads(frame_data)
+            #cv2.imshow("Rec", frame_min)
+            guiEye.put_vid_on_screen(sample_surface, frame_max, frame_min, self.mind_pointx, self.mind_pointy)
+            ke = cv2.waitKey(10)
+            if ke == 13:
+                break
+        self.client_socket.close()
+        #self.client_socket.close()
+        '''
+
+    def get_streamed_vid_thread2(self, sample_surface):
+        print("Start2")
+        data = b""
+        buf = None
+        # client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        payload_size = struct.calcsize("Q")
+        big_payload_size = struct.calcsize("QQ")
+        while True:
+            while len(data) < big_payload_size:
+                packet = self.client_socket.recv(8096)
+                if not packet: break
+                data += packet
+            packed_msg_size = data[:big_payload_size]
+            data = data[big_payload_size:]
+            msg = struct.unpack("Q I I", packed_msg_size)
+            msg_size = msg[0]
+            self.mind_pointx = msg[1] - 100
+            self.mind_pointy = msg[2] - 100
+            while len(data) < msg_size:
+                data += self.client_socket.recv(8096)
+            frame_data = data[:msg_size]
+            data = data[msg_size:]
+            frame_max = pickle.loads(frame_data)
+            #cv2.imshow("Receiving...", frame_max)
+            key = cv2.waitKey(10)
+            while len(data) < payload_size:
+                packet = self.client_socket.recv(8096)
+                if not packet: break
+                data += packet
+            packed_msg_size = data[:payload_size]
+            data = data[payload_size:]
+            msg_size = struct.unpack("Q", packed_msg_size)[0]
+            while len(data) < msg_size:
+                data += self.client_socket.recv(8096)
+            frame_data = data[:msg_size]
+            data = data[msg_size:]
+            frame_min = pickle.loads(frame_data)
+            #cv2.imshow("Rec", frame_min)
+            guiEye.put_vid_on_screen(sample_surface, frame_max, frame_min, self.mind_pointx, self.mind_pointy)
             ke = cv2.waitKey(10)
             if ke == 13:
                 break

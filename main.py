@@ -1,7 +1,49 @@
 import eyeTrack
+import client
+import threading
+import eyeTrack
+import cv2
+from GazeTracking.gaze_tracking import GazeTracking
+import eyeTrack
+import pygame
+
+MASTER = False
+SLAVE = True
 
 def main():
-    pass
+    if MASTER:
+        pass
+    elif SLAVE:
+        al, bl, sl, fl, el = 0, 0, 0, 0, 0
+        ap, bp, sp, fp, ep = 0, 0, 0, 0, 0
+        gaze = GazeTracking()
+        webcam = cv2.VideoCapture(0)
+
+        pygame.init()
+        sample_surface = pygame.display.set_mode((1200, 1000))
+        color = (255, 255, 0)
+        al, bl, sl, fl, el, ap, bp, sp, fp, ep, po_konf \
+            = eyeTrack.configCum(webcam, gaze, sample_surface,al, bl, sl, fl, el, ap, bp, sp, fp, ep)
+        slave = client.Client(client.HOST, client.PORT, client.PORT_CLIENT)
+        data = slave.get_titles()
+        slave.send_chosen_title(0, data)
+
+        thread1 = threading.Thread(target=slave.send_mindpoint_and_pause_thread1,
+                                   args=(webcam, gaze, sample_surface, al, bl, sl, fl, el, ap, bp, sp, fp, ep))
+
+        thread1.start()
+
+        slave.get_streamed_vid_thread2(sample_surface)
+
+        thread1.join()
 
 if __name__ == "__main__":
     main()
+
+'''
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+'''

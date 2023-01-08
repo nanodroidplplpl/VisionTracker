@@ -13,7 +13,7 @@ def round_int(x):
     if x in [float("-inf"),float("inf")]: return float("nan")
     return int(round(x))
 
-def configCum(webcam, al, bl, sl, fl, el, ap, bp, sp, fp, ep):
+def configCum(webcam, gaze, sample_surface,al, bl, sl, fl, el, ap, bp, sp, fp, ep):
     po_konf = False
     po_konfl, po_konfp, po_konfg, po_konfd = False, False, False, False
     print("Dupa1")
@@ -105,7 +105,7 @@ def get_nose_pos(webcam):
         break
     return xd, yd # 0 -dla poziomego a 1 dla pionowego
 
-def get_eye_mindpoint(al, bl, sl, fl, el, ap, bp, sp, fp, ep):
+def get_eye_mindpoint(webcam, gaze, sample_surface, al, bl, sl, fl, el, ap, bp, sp, fp, ep):
     # We get a new frame from the webcam
     _, frame = webcam.read()
 
@@ -119,10 +119,12 @@ def get_eye_mindpoint(al, bl, sl, fl, el, ap, bp, sp, fp, ep):
     if left_pupi is not None or right_pupi is not None:
         left_pupil = left_pupi
         right_pupil = right_pupi
+        el, ep = int(left_pupil[0]), int(left_pupil[1])
+    else:
+        el, ep = 600, 500
 
-    print(str(right_pupil))
-    el, ep = int(left_pupil[0]), int(left_pupil[1])
-    xlupdate, xpupdate = get_nose_pos(webcam)
+    #print(str(right_pupil))
+    #xlupdate, xpupdate = get_nose_pos(webcam)
     # wyznaczenie nowych skali dla oczu
     #zl = xlupdate - xl
     #zp = xpupdate - xp
@@ -146,7 +148,7 @@ def get_eye_mindpoint(al, bl, sl, fl, el, ap, bp, sp, fp, ep):
         ep = bp
 
     sl = bl - al
-    print("roznica = " + str(sl) + " max: " + str(bl) + " min: " + str(al) + " el: " + str(el))
+    #print("roznica = " + str(sl) + " max: " + str(bl) + " min: " + str(al) + " el: " + str(el))
     fl = (bl - el) * 1000
     if fl == 0:
         fl = 1
@@ -154,7 +156,7 @@ def get_eye_mindpoint(al, bl, sl, fl, el, ap, bp, sp, fp, ep):
     if sl == 0:
         sl = 1
     fl = fl / sl
-    print("Obliczone: " + str(fl))
+    #print("Obliczone: " + str(fl))
 
     sp = bp - ap
     # print("roznica = " + str(sp) + " max: " + str(bp) + " min: " + str(ap))

@@ -3,7 +3,8 @@ import numpy
 
 
 # przyjmuje to co wypluje cap = cv2.VideoCapture("film.mp4")
-def get_part_of_img(img, x, y, size_x, size_y) -> (numpy.ndarray, int, int, int, int):
+'''
+def get_part_of_img(img, x, y, size_x, size_y):
     #ret, img = cap.read()
     part = None
     x = int(x)
@@ -26,7 +27,9 @@ def get_part_of_img(img, x, y, size_x, size_y) -> (numpy.ndarray, int, int, int,
         part = img[0:size_y, int(x - size_x / 2):int(y + size_x / 2)]
     #cv2.imshow("Obraz...", part)
     return part
-
+'''
+def get_part_of_img(frame, y, x, size_y, size_x):
+    return frame[y - size_y:y + size_y, x - size_x:x + size_x]
 
 if __name__ == '__main__':
     cap = cv2.VideoCapture("taniec_na_lodzie.mp4")
