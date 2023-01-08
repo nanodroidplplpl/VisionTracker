@@ -114,14 +114,15 @@ class Server():
             #print("Pauza: " + str(self.pause) + " mind_pointx: " +
             #      str(self.mind_pointx) + " mind_pointy: " + str(self.mind_pointy))
 
+    '''Orginal
     def streamng_vid_thread2(self):
         print("start2")
         while True:
             self.server_socket.listen()
             #client, addr = self.client_socket.accept()
             if self.client_socket:
-                # vid = cv2.VideoCapture(0)
-                vid = cv2.VideoCapture("taniec_na_lodzie.mp4")
+                vid = cv2.VideoCapture(0)
+                #vid = cv2.VideoCapture("taniec_na_lodzie.mp4")
                 while (vid.isOpened()):
                     # get_part_of_img(img, x, y, size_x, size_y)
                     print("Pauza: " + str(self.pause) + " mind_pointx: " +
@@ -133,6 +134,33 @@ class Server():
                     #print("Wielkość wysyłanego pliku: " + str(len(a)))
                     cv2.imshow('Sending...', frame)
                     key = cv2.waitKey(10)
+    '''
+
+    def streamng_vid_thread2(self):
+        print("start2")
+        while True:
+            self.server_socket.listen()
+            #client, addr = self.client_socket.accept()
+            if self.client_socket:
+                vid = cv2.VideoCapture(0)
+                #vid = cv2.VideoCapture("taniec_na_lodzie.mp4")
+                while (vid.isOpened()):
+                    # get_part_of_img(img, x, y, size_x, size_y)
+                    print("Pauza: " + str(self.pause) + " mind_pointx: " +
+                          str(self.mind_pointx) + " mind_pointy: " + str(self.mind_pointy))
+                    img, frame = vid.read()
+                    a = pickle.dumps(frame)
+                    message = struct.pack("Q", len(a)) + a
+                    self.client_socket.sendall(message)
+                    frame_mini = frame[200 - 150:200 + 150, 200 - 150:200 + 150]
+                    a = pickle.dumps(frame_mini)
+                    message = struct.pack("Q", len(a)) + a
+                    self.client_socket.sendall(message)
+                    #print("Wielkość wysyłanego pliku: " + str(len(a)))
+                    cv2.imshow('Sending...', frame)
+                    key = cv2.waitKey(10)
+
+
 
     def testServer(self):
         server_socket = self.create_socket(socket.gethostbyname(socket.gethostname()), PORT)
