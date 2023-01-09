@@ -174,7 +174,7 @@ def get_eye_mindpoint(webcam, gaze, sample_surface, al, bl, sl, fl, el, ap, bp, 
 
     return round_int(fl), 1000 - round_int(fp)
 
-def test_eye_racking():
+def test_eye_racking(webcam, gaze, sumple_surface):
     al, bl, sl, fl, el = 0, 0, 0, 0, 0
     ap, bp, sp, fp, ep = 0, 0, 0, 0, 0
     zl, xl, xlupdate = 0, 0, 0
@@ -189,11 +189,11 @@ def test_eye_racking():
         xlupdate, xpupdate = get_nose_pos(webcam)
         xl, xp = xlupdate, xpupdate
         print("Pozycja nosa: " + str(xl), str(xp))
-        al, bl, sl, fl, el, ap, bp, sp, fp, ep, po_konf = configCum(webcam, al, bl, sl, fl, el, ap, bp, sp, fp, ep)
+        al, bl, sl, fl, el, ap, bp, sp, fp, ep, po_konf = configCum(webcam, gaze, sumple_surface, al, bl, sl, fl, el, ap, bp, sp, fp, ep)
         # xl, xp = getNosePos(webcam)
         if po_konf:
             while True:
-                fl, fp = get_eye_mindpoint(al, bl, sl, fl, el, ap, bp, sp, fp, ep)
+                fl, fp = get_eye_mindpoint(webcam, gaze, sumple_surface,al, bl, sl, fl, el, ap, bp, sp, fp, ep)
                 # fp = fp + zp
                 sample_surface.fill("BLACK")
                 pygame.draw.circle(sample_surface, color, (fl, fp), 20)
@@ -212,7 +212,7 @@ if __name__ == "__main__":
     sample_surface = pygame.display.set_mode((1200, 1000))
     color = (255, 255, 0)
 
-    test_eye_racking()
+    test_eye_racking(webcam, gaze, sample_surface)
 
     webcam.release()
     cv2.destroyAllWindows()

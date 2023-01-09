@@ -152,12 +152,14 @@ class Server():
                     #self.client_socket.sendall(message)
                     img, frame = vid.read()
                     frame = cv2.resize(frame, (1200, 1000))
+                    frame_mini = mpConfig.get_part_of_img(frame, self.mind_pointy, 1200 - self.mind_pointx, 300, 300)
+                    frame = cv2.resize(frame, (150, 125))
                     a = pickle.dumps(frame)
                     message = struct.pack("Q", len(a)) + struct.pack('I', self.mind_pointx) \
                               + struct.pack('I',self.mind_pointy) + a
                     self.client_socket.sendall(message)
                     #frame_mini = frame[200 - 150:200 + 150, 200 - 150:200 + 150]
-                    frame_mini = mpConfig.get_part_of_img(frame, self.mind_pointy, 1200-self.mind_pointx, 100, 100)
+                    #frame_mini = mpConfig.get_part_of_img(frame, self.mind_pointy, 1200-self.mind_pointx, 100, 100)
                     a = pickle.dumps(frame_mini)
                     message = struct.pack("Q", len(a)) + a
                     self.client_socket.sendall(message)

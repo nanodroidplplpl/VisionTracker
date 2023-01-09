@@ -171,8 +171,8 @@ class Client():
             data = data[big_payload_size:]
             msg = struct.unpack("Q I I", packed_msg_size)
             msg_size = msg[0]
-            self.mind_pointx = msg[1] - 100
-            self.mind_pointy = msg[2] - 100
+            self.mind_pointx = msg[1] - 300
+            self.mind_pointy = msg[2] - 300
             while len(data) < msg_size:
                 data += self.client_socket.recv(8096)
             frame_data = data[:msg_size]
@@ -193,6 +193,7 @@ class Client():
             data = data[msg_size:]
             frame_min = pickle.loads(frame_data)
             #cv2.imshow("Rec", frame_min)
+            frame_max = cv2.resize(frame_max,(1200, 1000))
             guiEye.put_vid_on_screen(sample_surface, frame_max, frame_min, self.mind_pointx, self.mind_pointy)
             ke = cv2.waitKey(10)
             if ke == 13:
