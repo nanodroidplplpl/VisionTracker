@@ -7,9 +7,21 @@ from GazeTracking.gaze_tracking import GazeTracking
 import eyeTrack
 import pygame
 import eyeTrackLinear
+import PySimpleGUI as sg
+import guiEye
 
 MASTER = False
 SLAVE = True
+
+layout = [
+    [sg.Text("Wybierz akcje:")],
+    [sg.Button('      Zakoncz dzialanie       ', key='-GCS0-')],
+    [sg.Button('           Zagluszanie           ', key='-GCS1-')],
+    [sg.Button('Podsluchiwanie i Detekcja', key='-GCS2-')],
+    [sg.Button('            Lokalizacja           ', key='-GCS3-')],
+    [sg.Button('       Wylacz BSP        ', key='-END-')],
+    [sg.Text(' -> ', key="-output-")],
+]
 
 def main_dump():
     if MASTER:
@@ -29,7 +41,7 @@ def main_dump():
             = eyeTrack.configCum(webcam, gaze, sample_surface,al, bl, sl, fl, el, ap, bp, sp, fp, ep)
         slave = client.Client(client.HOST, client.PORT, client.PORT_CLIENT, g)
         data = slave.get_titles()
-        slave.send_chosen_title(0, data)
+        slave.send_chosen_title(data)
 
         thread1 = threading.Thread(target=slave.send_mindpoint_and_pause_thread1,
                                    args=(webcam, gaze, sample_surface, al, bl, sl, fl, el, ap, bp, sp, fp, ep))
@@ -58,7 +70,8 @@ def main():
 
         slave = client.Client(client.HOST, client.PORT, client.PORT_CLIENT, g)
         data = slave.get_titles()
-        slave.send_chosen_title(0, data)
+        #guiEye.dump_gui(data)
+        slave.send_chosen_title(data)
 
         thread1 = threading.Thread(target=slave.send_mindpoint_and_pause_thread1,
                                    args=(webcam, gaze, sample_surface, al, bl, sl, fl, el, ap, bp, sp, fp, ep))

@@ -31,8 +31,51 @@ def get_part_of_img(img, x, y, size_x, size_y):
 def get_part_of_img(frame, y, x, size_y, size_x):
     return frame[y - size_y:y + size_y, x - size_x:x + size_x]
 
+def make_low_quality():
+    import cv2
+
+    # Open the video file
+    cap = cv2.VideoCapture("chinczyk_na_wrotkach.mp4")
+
+    # Get the frames per second (fps) of the video
+    fps = cap.get(cv2.CAP_PROP_FPS)
+
+    # Get the codec information of the video
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+
+    # Set the output file name and location
+    output_file = "chinczyk_na_wrotkach2.mp4"
+
+    # Set the output video dimensions
+    width = 1200
+    height = 1000
+
+    # Create a VideoWriter object
+    out = cv2.VideoWriter(output_file, fourcc, fps, (width, height))
+
+    while True:
+        # Read a frame from the video
+        ret, frame = cap.read()
+
+        if not ret:
+            # If the video is over, break out of the loop
+            break
+
+        # Resize the frame to the desired dimensions
+        frame = cv2.resize(frame, (width, height), interpolation=cv2.INTER_LINEAR)
+
+        # Write the frame to the output file
+        out.write(frame)
+
+    # Release the resources
+    cap.release()
+    out.release()
+
+
 if __name__ == '__main__':
-    cap = cv2.VideoCapture("taniec_na_lodzie.mp4")
+    make_low_quality()
+    '''
+    cap = cv2.VideoCapture("chinczyk_na_wrotkach.mp4")
     # Check if camera opened successfully
     if (cap.isOpened() == False):
         print("Error opening video file")
@@ -44,7 +87,6 @@ if __name__ == '__main__':
         ret, frame = cap.read()
         if ret == True:
             # Display the resulting frame
-            frame = frame[200-150:200+150, 200-150:200+150]
             cv2.imshow('Frame', frame)
 
             # Press Q on keyboard to exit
@@ -61,4 +103,5 @@ if __name__ == '__main__':
 
     # Closes all the frames
     cv2.destroyAllWindows()
+    '''
 

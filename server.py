@@ -140,30 +140,25 @@ class Server():
         print("start2")
         while True:
             self.server_socket.listen()
-            #client, addr = self.client_socket.accept()
             if self.client_socket:
-                vid = cv2.VideoCapture(0)
-                #vid = cv2.VideoCapture("taniec_na_lodzie.mp4")
+                #vid = cv2.VideoCapture(0)
+                vid = cv2.VideoCapture("/Users/maciejkawka/PycharmProjects/pythonProject/bad_movies/chinczyk_na_wrotkach.mp4")
+                vid2 = cv2.VideoCapture("chinczyk_na_wrotkach.mp4")
                 while (vid.isOpened()):
-                    # get_part_of_img(img, x, y, size_x, size_y)
                     print("Pauza: " + str(self.pause) + " mind_pointx: " +
                           str(self.mind_pointx) + " mind_pointy: " + str(self.mind_pointy))
-                    #message = struct.pack('i', self.mind_pointx) + struct.pack('i',self.mind_pointy)
-                    #self.client_socket.sendall(message)
                     img, frame = vid.read()
-                    frame = cv2.resize(frame, (1200, 1000))
-                    frame_mini = mpConfig.get_part_of_img(frame, self.mind_pointy, 1200 - self.mind_pointx, 300, 300)
-                    frame = cv2.resize(frame, (150, 125))
+                    img, frame_mini = vid2.read()
+                    #frame = cv2.resize(frame, (1200, 1000))
+                    frame_mini = mpConfig.get_part_of_img(frame_mini, self.mind_pointy, 1200 - self.mind_pointx, 300, 300)
+                    #frame = cv2.resize(frame, (150, 125))
                     a = pickle.dumps(frame)
                     message = struct.pack("Q", len(a)) + struct.pack('I', self.mind_pointx) \
-                              + struct.pack('I',self.mind_pointy) + a
+                              + struct.pack('I', self.mind_pointy) + a
                     self.client_socket.sendall(message)
-                    #frame_mini = frame[200 - 150:200 + 150, 200 - 150:200 + 150]
-                    #frame_mini = mpConfig.get_part_of_img(frame, self.mind_pointy, 1200-self.mind_pointx, 100, 100)
                     a = pickle.dumps(frame_mini)
                     message = struct.pack("Q", len(a)) + a
                     self.client_socket.sendall(message)
-                    #print("Wielkość wysyłanego pliku: " + str(len(a)))
                     cv2.imshow('Sending...', frame)
                     key = cv2.waitKey(10)
 

@@ -26,6 +26,8 @@ class Client():
     mind_pointy = 0
     g = None
     one = False
+    pause = 0
+    choice = 0
 
     lock = threading.Lock()
 
@@ -83,7 +85,7 @@ class Client():
         print(data)
         return data
 
-    def send_chosen_title(self, choice, data):
+    def send_chosen_title(self, data):
         self.client_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         host_name = socket.gethostname()
         client_server_address = ((self.HOST, self.PORT_CLIENT))
@@ -92,7 +94,7 @@ class Client():
             self.client_server_socket.listen()
             self.server_client_socket, addr = self.client_server_socket.accept()
             if self.server_client_socket:
-                self.server_client_socket.sendall(data[choice].encode())
+                self.server_client_socket.sendall(data[self.choice].encode())
                 # do wywalenia
                 #self.server_socket.close()
                 return
@@ -101,16 +103,24 @@ class Client():
         print("Start1")
         if self.one:
             while True:
-                a = 0
+                a = self.pause
                 b, c = eyeTrack.get_eye_mindpoint(webcam, gaze, sample_surface, al, bl, sl, fl, el, ap, bp, sp, fp, ep)
                 d = str(a) + ' ' + str(b) + ' ' + str(c)
                 self.server_client_socket.sendall(d.encode())
         else:
             while True:
-                a = 0
+                a = self.pause
                 b, c = self.g.get_mind_point(webcam, gaze)
                 b, c = int(b), int(c)
-                print(b)
+                #print(b)
+                if b > 900:
+                    b = 899
+                if b < 300:
+                    b = 301
+                if c > 700:
+                    c = 699
+                if c < 300:
+                    c = 301
                 d = str(a) + ' ' + str(b) + ' ' + str(c)
                 self.server_client_socket.sendall(d.encode())
 
