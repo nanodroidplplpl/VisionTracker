@@ -14,4 +14,5 @@ Szukanie punktu zainteresowania użytkownika wersja 1:
 ![IMG_2BD705C0A87D-1](https://user-images.githubusercontent.com/52038211/211599724-94a18b79-537d-4bde-8bff-2f57457f7112.jpeg)
 
 Szukanie punktu zainteresowania użytkownika wersja 2:
-![IMG_1A32C69BC238-1](https://user-images.githubusercontent.com/52038211/211603840-c4ce3754-1815-4057-9579-3b75b7e162ff.jpeg)
+![IMG_6872C3A837A6-1](https://user-images.githubusercontent.com/52038211/211613939-f38cb682-ceb0-4c15-9826-f33427fcd55e.jpeg)
+
