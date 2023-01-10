@@ -1,6 +1,7 @@
 # Modol servera, ktory streamoje film do polaczonego klienta
 # Odbierajac przy tym informacje o tym gdzie zwiekszyc rozdzielczosc
 import socket
+import sys
 import threading
 from time import sleep
 
@@ -31,11 +32,16 @@ class Server():
     pause = 0
     prep_to_send = True
 
+    hipo_data = 0
+    sended_data = 0
+
     lock = threading.Lock()
     def __init__(self, host, port):
         self.clinet_server_socket = None
         self.HOST = host
         self.PORT = port
+        self.hipo_data = 0
+        self.sended_data = 0
 
     def create_socket(self, server_address, server_port):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -154,6 +160,7 @@ class Server():
                     if self.pause == 0:
                         img, frame = vid.read()
                         img, frame_mini = vid2.read()
+                        self.hipo_data += len(pickle.dumps(frame_mini))
                         # frame = cv2.resize(frame, (1200, 1000))
                         frame_mini = mpConfig.get_part_of_img(frame_mini, self.mind_pointy, 1200 - self.mind_pointx,
                                                               300, 300)
@@ -161,10 +168,14 @@ class Server():
                         a = pickle.dumps(frame)
                         message = struct.pack("Q", len(a)) + struct.pack('I', self.mind_pointx) \
                                   + struct.pack('I', self.mind_pointy) + a
+                        self.sended_data += len(a)
                         self.client_socket.sendall(message)
                         a = pickle.dumps(frame_mini)
                         message = struct.pack("Q", len(a)) + a
                         self.client_socket.sendall(message)
+                        self.sended_data += len(a)
+                        print("Dane przeslane: "+str(self.sended_data)+" Dane ktore normalnie byly by przeslane: "
+                              +str(self.hipo_data)+" Oszczednosc: "+str(self.hipo_data - self.sended_data))
                         cv2.imshow('Sending...', frame)
                         key = cv2.waitKey(10)
 
