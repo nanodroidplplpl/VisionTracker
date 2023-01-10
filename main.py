@@ -13,15 +13,6 @@ import guiEye
 MASTER = False
 SLAVE = True
 
-layout = [
-    [sg.Text("Wybierz akcje:")],
-    [sg.Button('      Zakoncz dzialanie       ', key='-GCS0-')],
-    [sg.Button('           Zagluszanie           ', key='-GCS1-')],
-    [sg.Button('Podsluchiwanie i Detekcja', key='-GCS2-')],
-    [sg.Button('            Lokalizacja           ', key='-GCS3-')],
-    [sg.Button('       Wylacz BSP        ', key='-END-')],
-    [sg.Text(' -> ', key="-output-")],
-]
 
 def main_dump():
     if MASTER:

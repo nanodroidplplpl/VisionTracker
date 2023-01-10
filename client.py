@@ -5,6 +5,7 @@ from time import sleep
 import threading
 import eyeTrack
 import guiEye
+import pygame
 
 import cv2
 import pickle
@@ -178,41 +179,50 @@ class Client():
         payload_size = struct.calcsize("Q")
         big_payload_size = struct.calcsize("QQ")
         while True:
-            while len(data) < big_payload_size:
-                packet = self.client_socket.recv(8096)
-                if not packet: break
-                data += packet
-            packed_msg_size = data[:big_payload_size]
-            data = data[big_payload_size:]
-            msg = struct.unpack("Q I I", packed_msg_size)
-            msg_size = msg[0]
-            self.mind_pointx = msg[1] - 300
-            self.mind_pointy = msg[2] - 300
-            while len(data) < msg_size:
-                data += self.client_socket.recv(8096)
-            frame_data = data[:msg_size]
-            data = data[msg_size:]
-            frame_max = pickle.loads(frame_data)
-            #cv2.imshow("Receiving...", frame_max)
-            key = cv2.waitKey(10)
-            while len(data) < payload_size:
-                packet = self.client_socket.recv(8096)
-                if not packet: break
-                data += packet
-            packed_msg_size = data[:payload_size]
-            data = data[payload_size:]
-            msg_size = struct.unpack("Q", packed_msg_size)[0]
-            while len(data) < msg_size:
-                data += self.client_socket.recv(8096)
-            frame_data = data[:msg_size]
-            data = data[msg_size:]
-            frame_min = pickle.loads(frame_data)
-            #cv2.imshow("Rec", frame_min)
-            frame_max = cv2.resize(frame_max,(1200, 1000))
-            guiEye.put_vid_on_screen(sample_surface, frame_max, frame_min, self.mind_pointx, self.mind_pointy)
-            ke = cv2.waitKey(10)
-            if ke == 13:
-                break
+            if self.pause == 0:
+                while len(data) < big_payload_size:
+                    packet = self.client_socket.recv(8096)
+                    if not packet: break
+                    data += packet
+                packed_msg_size = data[:big_payload_size]
+                data = data[big_payload_size:]
+                msg = struct.unpack("Q I I", packed_msg_size)
+                msg_size = msg[0]
+                self.mind_pointx = msg[1] - 300
+                self.mind_pointy = msg[2] - 300
+                while len(data) < msg_size:
+                    data += self.client_socket.recv(8096)
+                frame_data = data[:msg_size]
+                data = data[msg_size:]
+                frame_max = pickle.loads(frame_data)
+                # cv2.imshow("Receiving...", frame_max)
+                key = cv2.waitKey(10)
+                while len(data) < payload_size:
+                    packet = self.client_socket.recv(8096)
+                    if not packet: break
+                    data += packet
+                packed_msg_size = data[:payload_size]
+                data = data[payload_size:]
+                msg_size = struct.unpack("Q", packed_msg_size)[0]
+                while len(data) < msg_size:
+                    data += self.client_socket.recv(8096)
+                frame_data = data[:msg_size]
+                data = data[msg_size:]
+                frame_min = pickle.loads(frame_data)
+                # cv2.imshow("Rec", frame_min)
+                frame_max = cv2.resize(frame_max, (1200, 1000))
+                guiEye.put_vid_on_screen(sample_surface, frame_max, frame_min, self.mind_pointx, self.mind_pointy)
+                ke = cv2.waitKey(10)
+                if ke == 13:
+                    break
+            else:
+                guiEye.put_vid_on_screen(sample_surface, frame_max, frame_min, self.mind_pointx, self.mind_pointy)
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    if self.pause == 0:
+                        self.pause = 1
+                    else:
+                        self.pause = 0
         self.client_socket.close()
         #self.client_socket.close()
 

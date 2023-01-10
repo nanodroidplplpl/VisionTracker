@@ -46,7 +46,6 @@ def dump_gui(data):
 
     window.Close()
 
-
 if __name__ == '__main__':
     #data =['cos1', 'cos2']
     #dump_gui(data)

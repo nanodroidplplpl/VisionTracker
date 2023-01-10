@@ -10,6 +10,10 @@ import struct
 import imutils
 import os
 
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
 import mpConfig
 
 HOST = '127.0.0.1'
@@ -145,22 +149,24 @@ class Server():
                 vid = cv2.VideoCapture("/Users/maciejkawka/PycharmProjects/pythonProject/bad_movies/chinczyk_na_wrotkach.mp4")
                 vid2 = cv2.VideoCapture("chinczyk_na_wrotkach.mp4")
                 while (vid.isOpened()):
-                    print("Pauza: " + str(self.pause) + " mind_pointx: " +
-                          str(self.mind_pointx) + " mind_pointy: " + str(self.mind_pointy))
-                    img, frame = vid.read()
-                    img, frame_mini = vid2.read()
-                    #frame = cv2.resize(frame, (1200, 1000))
-                    frame_mini = mpConfig.get_part_of_img(frame_mini, self.mind_pointy, 1200 - self.mind_pointx, 300, 300)
-                    #frame = cv2.resize(frame, (150, 125))
-                    a = pickle.dumps(frame)
-                    message = struct.pack("Q", len(a)) + struct.pack('I', self.mind_pointx) \
-                              + struct.pack('I', self.mind_pointy) + a
-                    self.client_socket.sendall(message)
-                    a = pickle.dumps(frame_mini)
-                    message = struct.pack("Q", len(a)) + a
-                    self.client_socket.sendall(message)
-                    cv2.imshow('Sending...', frame)
-                    key = cv2.waitKey(10)
+                    #print("Pauza: " + str(self.pause) + " mind_pointx: " +
+                    #      str(self.mind_pointx) + " mind_pointy: " + str(self.mind_pointy))
+                    if self.pause == 0:
+                        img, frame = vid.read()
+                        img, frame_mini = vid2.read()
+                        # frame = cv2.resize(frame, (1200, 1000))
+                        frame_mini = mpConfig.get_part_of_img(frame_mini, self.mind_pointy, 1200 - self.mind_pointx,
+                                                              300, 300)
+                        # frame = cv2.resize(frame, (150, 125))
+                        a = pickle.dumps(frame)
+                        message = struct.pack("Q", len(a)) + struct.pack('I', self.mind_pointx) \
+                                  + struct.pack('I', self.mind_pointy) + a
+                        self.client_socket.sendall(message)
+                        a = pickle.dumps(frame_mini)
+                        message = struct.pack("Q", len(a)) + a
+                        self.client_socket.sendall(message)
+                        cv2.imshow('Sending...', frame)
+                        key = cv2.waitKey(10)
 
 
 

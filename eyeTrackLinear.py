@@ -16,12 +16,17 @@ class GazeFinder:
     b0x, b1x, b2x, b3x = 0, 0, 0, 0
     b0y, b1y, b2y, b3y = 0, 0, 0, 0
     array_len = None
+    gaze_right = None
+
+    hipodata = 0
+
 
     def __init__(self):
         self.data_x = np.zeros(shape=(0, 4))
         self.data_y = np.zeros(shape=(0, 4))
         self.count = 0
         self.array_len = 0
+        self.gaze_right = np.zeros(shape=(0,2))
 
     def modol(self, x, y):
         if x - y > 0:
@@ -29,11 +34,18 @@ class GazeFinder:
         else:
             return y - x
 
+    def calc_avg(self):
+        return (np.mean(self.data_x[:,1], axis=0), np.mean(self.data_x[:,1], axis=0),)
+
+    def calc_avg_right(self):
+        return (np.mean(self.gaze_right[:, 0], axis=0), np.mean(self.gaze_right[:, 1], axis=0),)
     def get_gaze_position(self, webcam, gaze):
         _, frame = webcam.read()
         gaze.refresh(frame)
         frame = gaze.annotated_frame()
         left_pupil = gaze.pupil_left_coords()
+        if not left_pupil:
+            left_pupil = self.calc_avg()
         return left_pupil[0], left_pupil[1]
 
     def get_face_distance(self, webcam, gaze):
@@ -41,7 +53,13 @@ class GazeFinder:
         gaze.refresh(frame)
         frame = gaze.annotated_frame()
         left_pupil = gaze.pupil_left_coords()
+        if not left_pupil:
+            left_pupil = self.calc_avg()
         right_pupil = gaze.pupil_right_coords()
+        if right_pupil:
+            self.gaze_right = np.vstack([self.gaze_right, [right_pupil[0], right_pupil[1]]])
+        else:
+            right_pupil = self.calc_avg_right()
         return self.modol(left_pupil[0], right_pupil[0])
 
     def get_nose_pos(self, webcam):
