@@ -10,6 +10,7 @@ import cv2
 import pickle
 import struct
 import imutils
+import eyeTrackLinear
 
 HOST = '127.0.0.1'
 PORT = 5001
@@ -23,13 +24,16 @@ class Client():
     server_client_socket = None # adres serweru jako klienta
     mind_pointx = 0
     mind_pointy = 0
+    g = None
+    one = False
 
     lock = threading.Lock()
 
-    def __init__(self, host, port, port_client):
+    def __init__(self, host, port, port_client, g):
         self.HOST = host
         self.PORT = port
         self.PORT_CLIENT = port_client
+        self.g = g
 
     def create_socket(self):
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -95,20 +99,21 @@ class Client():
 
     def send_mindpoint_and_pause_thread1(self, webcam, gaze, sample_surface, al, bl, sl, fl, el, ap, bp, sp, fp, ep):
         print("Start1")
-        while True:
-            #a = str(input())
-            #b = str(input())
-            #c = str(input())
-            a = 0
-            b, c = eyeTrack.get_eye_mindpoint(webcam, gaze, sample_surface, al, bl, sl, fl, el, ap, bp, sp, fp, ep)
-            #self.lock.acquire()
-            #try:
-            #    self.mind_pointx = b
-            #    self.mind_pointy = c
-            #finally:
-            #    self.lock.release()
-            d = str(a)+' '+str(b)+' '+str(c)
-            self.server_client_socket.sendall(d.encode())
+        if self.one:
+            while True:
+                a = 0
+                b, c = eyeTrack.get_eye_mindpoint(webcam, gaze, sample_surface, al, bl, sl, fl, el, ap, bp, sp, fp, ep)
+                d = str(a) + ' ' + str(b) + ' ' + str(c)
+                self.server_client_socket.sendall(d.encode())
+        else:
+            while True:
+                a = 0
+                b, c = self.g.get_mind_point(webcam, gaze)
+                b, c = int(b), int(c)
+                print(b)
+                d = str(a) + ' ' + str(b) + ' ' + str(c)
+                self.server_client_socket.sendall(d.encode())
+
             #print("Sending...")
 
     '''Oryginal
