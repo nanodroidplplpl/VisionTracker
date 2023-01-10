@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="132cbce4-504c-4241-ad57-262bbe4a899c" name="Changes" comment="Dodanie opcji eye trackera z regresją liniową">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client.py" beforeDir="false" afterPath="$PROJECT_DIR$/client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/guiEye.py" beforeDir="false" afterPath="$PROJECT_DIR$/guiEye.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mpConfig.py" beforeDir="false" afterPath="$PROJECT_DIR$/mpConfig.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/server.py" afterDir="false" />
-    </list>
+    <list default="true" id="132cbce4-504c-4241-ad57-262bbe4a899c" name="Changes" comment="wersja do pokazania na zajeciach" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -230,7 +223,7 @@
       <workItem from="1673266838612" duration="2069000" />
       <workItem from="1673274573930" duration="12154000" />
       <workItem from="1673294990060" duration="13295000" />
-      <workItem from="1673347553952" duration="9783000" />
+      <workItem from="1673347553952" duration="10087000" />
     </task>
     <task id="LOCAL-00001" summary="Test">
       <created>1672754425073</created>
@@ -309,7 +302,14 @@
       <option name="project" value="LOCAL" />
       <updated>1673309075662</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="wersja do pokazania na zajeciach">
+      <created>1673357483903</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1673357483904</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -337,7 +337,8 @@
     <MESSAGE value="Wyświetlanie obu obrazów w dobry sposób" />
     <MESSAGE value="Pierwsza działająca wersja!!!" />
     <MESSAGE value="Dodanie opcji eye trackera z regresją liniową" />
-    <option name="LAST_COMMIT_MESSAGE" value="Dodanie opcji eye trackera z regresją liniową" />
+    <MESSAGE value="wersja do pokazania na zajeciach" />
+    <option name="LAST_COMMIT_MESSAGE" value="wersja do pokazania na zajeciach" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/visionTracker$newTest.coverage" NAME="newTest Coverage Results" MODIFIED="1672779606771" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
